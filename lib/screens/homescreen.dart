@@ -1,6 +1,7 @@
 import 'package:firebase/screens/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,24 +15,19 @@ class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = new GoogleSignIn();
 
-  final FirebaseAuth eauth = FirebaseAuth.instance;
-  Future<FirebaseUser> emaillogin(String email, String password) async {
-    final AuthResult result = await eauth.signInWithEmailAndPassword(
-        email: email, password: password);
-    final FirebaseUser user = result.user;
-    assert(user != null);
-    assert(await user.getIdToken() != null);
-    final FirebaseUser currentuser = await eauth.currentUser();
-    assert(user.uid == currentuser.uid); // assertion made
-    print('login done');
-    return user;
+  void signinwithemail() async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _textEditingController.text,
+          password: _textEditingControlle.text);
+      Navigator.push(context, MaterialPageRoute(builder: (ctx) => Welcome()));
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
-  Future<FirebaseUser> signup(email, password) async {
-    AuthResult result = await eauth.createUserWithEmailAndPassword(
-        email: email, password: password);
-    final FirebaseUser user = result.user;
-    assert(user != null);
+  Future<FirebaseUser> currentuser() async {
+    FirebaseUser user = await _auth.currentUser();
     return user;
   }
 
@@ -110,54 +106,21 @@ class _HomePageState extends State<HomePage> {
   Widget _input() {
     return Form(
       key: formkey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: TextFormField(
-              controller: _textEditingController,
-              autocorrect: true,
-              maxLines: 1,
-              keyboardType: TextInputType.emailAddress,
-              autofocus: false,
-              decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.blue,
-                    width: 1,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                ),
-                border: InputBorder.none,
-                floatingLabelBehavior: FloatingLabelBehavior.auto,
-                hintText: 'Email',
-                labelText: 'Email',
-                icon: Icon(
-                  Icons.markunread,
-                  color: Colors.black,
-                  size: 20,
-                ),
-              ),
-              validator: (value) =>
-                  value.isEmpty ? 'Email can\'t be empty' : null,
-              onSaved: (value) => _email = value,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: TextFormField(
-              maxLines: 1,
-              controller: _textEditingControlle,
-              autofocus: true,
-              obscureText: true,
-              decoration: InputDecoration(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: TextFormField(
+                controller: _textEditingController,
+                autocorrect: true,
+                maxLines: 1,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: false,
+                decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.blue,
@@ -172,53 +135,89 @@ class _HomePageState extends State<HomePage> {
                   ),
                   border: InputBorder.none,
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  hintText: 'Password',
-                  labelText: 'Password',
+                  hintText: 'Email',
+                  labelText: 'Email',
                   icon: Icon(
-                    Icons.lock_outline,
+                    Icons.markunread,
                     color: Colors.black,
                     size: 20,
-                  )),
-              validator: (value) => value.isEmpty ? 'Enter password' : null,
-              onSaved: (value) => _password = value,
+                  ),
+                ),
+                validator: (value) =>
+                    value.isEmpty ? 'Email can\'t be empty' : null,
+                onChanged: (value) => _email = value,
+              ),
             ),
-          ),
-          _buttons(),
-          Divider(),
-          InkWell(
-            onTap: () {
-              onSigned(context);
-            }, // google sign in
-            child: Container(
-              padding: EdgeInsets.all(10),
-              width: MediaQuery.of(context).size.width,
-              height: 80,
-              child: Card(
-                color: Colors.black,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Icon(
-                      Icons.markunread,
-                      color: Colors.blue,
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Continue with Google',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
-                        ),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: TextFormField(
+                maxLines: 1,
+                controller: _textEditingControlle,
+                autofocus: true,
+                obscureText: true,
+                decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 1,
                       ),
                     ),
-                  ],
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                    ),
+                    border: InputBorder.none,
+                    floatingLabelBehavior: FloatingLabelBehavior.auto,
+                    hintText: 'Password',
+                    labelText: 'Password',
+                    icon: Icon(
+                      Icons.lock_outline,
+                      color: Colors.black,
+                      size: 20,
+                    )),
+                validator: (value) => value.isEmpty ? 'Enter password' : null,
+                onSaved: (value) => _password = value,
+              ),
+            ),
+            _buttons(),
+            Divider(),
+            InkWell(
+              onTap: () {
+                onSigned(context);
+              }, // google sign in
+              child: Container(
+                padding: EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width,
+                height: 80,
+                child: Card(
+                  color: Colors.black,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Icon(
+                        Icons.markunread,
+                        color: Colors.blue,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Continue with Google',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -237,10 +236,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
               onPressed: () {
-                emaillogin(_email, _password).then((FirebaseUser user) {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (ctx) => Welcome()));
-                });
+                signinwithemail();
               },
             ),
           ),
@@ -266,10 +262,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
               onPressed: () {
-                signup(_email, _password).then((FirebaseUser user) {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (ctx) => Welcome()));
-                });
+                signinwithemail();
               },
             ),
           ),
