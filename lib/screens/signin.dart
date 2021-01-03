@@ -1,17 +1,20 @@
+import 'dart:ui';
+
 import 'package:firebase/screens/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class HomePage extends StatefulWidget {
+class Signin extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _SigninState createState() => _SigninState();
 }
 
 enum FormType { login, register }
 
-class _HomePageState extends State<HomePage> {
+class _SigninState extends State<Signin> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = new GoogleSignIn();
 
@@ -66,47 +69,58 @@ class _HomePageState extends State<HomePage> {
     return false;
   }
 
-  void _formchange() async {
+  /*void _formchange() async {
     setState(() {
       if (_form == FormType.register) {
         // ignore: unnecessary_statements
         _form == FormType.login;
-      }
-      if (_form == FormType.login) {
+      } else {
         _form = FormType.register;
       }
     });
-  }
+  } */
 
   TextEditingController _textEditingController = TextEditingController();
   TextEditingController _textEditingControlle = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Text(
-          'Firebase Login',
-          style: TextStyle(color: Colors.black),
-        ),
+        body: SingleChildScrollView(
+            child: Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Container(
+              width: MediaQuery.of(context).size.width,
+              child: Image.asset(
+                'assets/frame.png',
+              )),
+          SizedBox(
+            height: 30,
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 20),
+            alignment: Alignment.topLeft,
+            child: Text("Login",
+                style: GoogleFonts.poppins(
+                    color: Colors.black,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold)),
+          ),
+          Center(
+            child: _input(),
+          )
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(20),
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Center(child: _input()),
-        ),
-      ),
-    );
+    )));
   }
 
   Widget _input() {
     return Form(
       key: formkey,
       child: Container(
+        /* padding: EdgeInsets.all(20), */
         width: MediaQuery.of(context).size.width,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.black,
+                      color: Colors.yellow,
                       width: 1,
                     ),
                   ),
@@ -137,11 +151,6 @@ class _HomePageState extends State<HomePage> {
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
                   hintText: 'Email',
                   labelText: 'Email',
-                  icon: Icon(
-                    Icons.markunread,
-                    color: Colors.black,
-                    size: 20,
-                  ),
                 ),
                 validator: (value) =>
                     value.isEmpty ? 'Email can\'t be empty' : null,
@@ -156,27 +165,23 @@ class _HomePageState extends State<HomePage> {
                 autofocus: true,
                 obscureText: true,
                 decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.blue,
-                        width: 1,
-                      ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blue,
+                      width: 1,
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 1,
-                      ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.yellow,
+                      width: 1,
                     ),
-                    border: InputBorder.none,
-                    floatingLabelBehavior: FloatingLabelBehavior.auto,
-                    hintText: 'Password',
-                    labelText: 'Password',
-                    icon: Icon(
-                      Icons.lock_outline,
-                      color: Colors.black,
-                      size: 20,
-                    )),
+                  ),
+                  border: InputBorder.none,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  hintText: 'Password',
+                  labelText: 'Password',
+                ),
                 validator: (value) => value.isEmpty ? 'Enter password' : null,
                 onSaved: (value) => _password = value,
               ),
@@ -190,26 +195,23 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 padding: EdgeInsets.all(10),
                 width: MediaQuery.of(context).size.width,
-                height: 80,
+                height: 90,
                 child: Card(
-                  color: Colors.black,
+                  color: Colors.white,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Icon(
-                        Icons.markunread,
-                        color: Colors.blue,
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Continue with Google',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 20,
-                          ),
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Image.asset(
+                          'assets/google.png',
                         ),
+                      ),
+                      Center(
+                        child: Text('Continue with Google',
+                            style: GoogleFonts.poppins(
+                                color: Colors.black, fontSize: 20)),
                       ),
                     ],
                   ),
@@ -223,43 +225,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buttons() {
-    if (_form == FormType.login) {
-      return Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: RaisedButton(
-              elevation: 3,
-              color: Colors.black,
-              child: Text(
-                'Sign in',
-                style: TextStyle(color: Colors.white, fontSize: 15),
-              ),
-              onPressed: () {
-                signinwithemail();
-              },
-            ),
-          ),
-          FlatButton(
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(10),
+          child: RaisedButton(
+            elevation: 3,
+            color: Colors.blueAccent,
             child: Text(
-              'Create account',
-              style: TextStyle(color: Colors.black, fontSize: 15),
+              'Sign in',
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
             ),
-            onPressed: _formchange,
-          )
-        ],
-      );
-    } else {
+            onPressed: () {
+              signinwithemail();
+            },
+          ),
+        ),
+      ],
+    );
+    /* else {
       return Column(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.all(10),
             child: RaisedButton(
               elevation: 3,
-              color: Colors.black,
+              color: Colors.blue,
               child: Text(
                 'Sign up',
-                style: TextStyle(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 15),
               ),
               onPressed: () {
                 signinwithemail();
@@ -268,13 +262,13 @@ class _HomePageState extends State<HomePage> {
           ),
           FlatButton(
             child: Text(
-              'already a user ? Login',
-              style: TextStyle(color: Colors.black, fontSize: 15),
+              'Login',
+              style: TextStyle(color: Colors.blue, fontSize: 15),
             ),
-            onPressed: _formchange,
+            onPressed: ,
           ),
         ],
       );
-    }
+    } */
   }
 }
